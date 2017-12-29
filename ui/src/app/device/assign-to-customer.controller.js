@@ -77,8 +77,8 @@ export default function AssignDeviceToCustomerController(customerService, device
 
     function assign() {
         var tasks = [];
-        for (var i=0;i<deviceIds.length;i++) {
-            tasks.push(deviceService.assignDeviceToCustomer(vm.customers.selection.id.id, deviceIds[i]));
+        for (var deviceId in deviceIds) {
+            tasks.push(deviceService.assignDeviceToCustomer(vm.customers.selection.id.id, deviceIds[deviceId]));
         }
         $q.all(tasks).then(function () {
             $mdDialog.hide();

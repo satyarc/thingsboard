@@ -265,9 +265,9 @@ function UserService($http, $q, $rootScope, adminService, dashboardService, logi
             var pageLink = {limit: 100};
             var fetchDashboardsPromise;
             if (currentUser.authority === 'TENANT_ADMIN') {
-                fetchDashboardsPromise = dashboardService.getTenantDashboards(pageLink, false);
+                fetchDashboardsPromise = dashboardService.getTenantDashboards(pageLink);
             } else {
-                fetchDashboardsPromise = dashboardService.getCustomerDashboards(currentUser.customerId, pageLink, false);
+                fetchDashboardsPromise = dashboardService.getCustomerDashboards(currentUser.customerId, pageLink);
             }
             fetchDashboardsPromise.then(
                 function success(result) {
@@ -302,7 +302,7 @@ function UserService($http, $q, $rootScope, adminService, dashboardService, logi
                     $rootScope.forceFullscreen = true;
                     fetchAllowedDashboardIds();
                 } else if (currentUser.userId) {
-                    getUser(currentUser.userId, true).then(
+                    getUser(currentUser.userId).then(
                         function success(user) {
                             currentUserDetails = user;
                             updateUserLang();
@@ -319,7 +319,6 @@ function UserService($http, $q, $rootScope, adminService, dashboardService, logi
                         },
                         function fail() {
                             deferred.reject();
-                            logout();
                         }
                     )
                 } else {
@@ -415,19 +414,19 @@ function UserService($http, $q, $rootScope, adminService, dashboardService, logi
         }
         $http.post(url, user).then(function success(response) {
             deferred.resolve(response.data);
-        }, function fail() {
-            deferred.reject();
+        }, function fail(response) {
+            deferred.reject(response.data);
         });
         return deferred.promise;
     }
 
-    function getUser(userId, ignoreErrors) {
+    function getUser(userId) {
         var deferred = $q.defer();
         var url = '/api/user/' + userId;
-        $http.get(url, { ignoreErrors: ignoreErrors }).then(function success(response) {
+        $http.get(url).then(function success(response) {
             deferred.resolve(response.data);
-        }, function fail() {
-            deferred.reject();
+        }, function fail(response) {
+            deferred.reject(response.data);
         });
         return deferred.promise;
     }
@@ -437,8 +436,8 @@ function UserService($http, $q, $rootScope, adminService, dashboardService, logi
         var url = '/api/user/' + userId;
         $http.delete(url).then(function success() {
             deferred.resolve();
-        }, function fail() {
-            deferred.reject();
+        }, function fail(response) {
+            deferred.reject(response.data);
         });
         return deferred.promise;
     }
@@ -489,6 +488,7 @@ function UserService($http, $q, $rootScope, adminService, dashboardService, logi
     function gotoDefaultPlace(params) {
         if (currentUser && isAuthenticated()) {
             var place = 'home.links';
+
             if (currentUser.authority === 'TENANT_ADMIN' || currentUser.authority === 'CUSTOMER_USER') {
                 if (userHasDefaultDashboard()) {
                     place = 'home.dashboards.dashboard';

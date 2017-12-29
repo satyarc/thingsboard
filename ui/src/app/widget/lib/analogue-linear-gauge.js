@@ -212,9 +212,7 @@ export default class TbAnalogueLinearGauge {
                 var tvPair = cellData.data[cellData.data.length -
                 1];
                 var value = tvPair[1];
-                if(value !== this.gauge.value) {
-                    this.gauge.value = value;
-                }
+                this.gauge.value = value;
             }
         }
     }

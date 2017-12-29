@@ -61,7 +61,7 @@ function AlarmsTableWidgetController($element, $scope, $filter, $mdMedia, $mdDia
     vm.selectedAlarms = []
 
     vm.alarmSource = null;
-    vm.allAlarms = [];
+    vm.allAlarms = null;
 
     vm.currentAlarm = null;
 
@@ -124,7 +124,7 @@ function AlarmsTableWidgetController($element, $scope, $filter, $mdMedia, $mdDia
     $scope.$on('alarms-table-data-updated', function(event, tableId) {
         if (vm.tableId == tableId) {
             if (vm.subscription) {
-                vm.allAlarms = vm.subscription.alarms || [];
+                vm.allAlarms = vm.subscription.alarms;
                 updateAlarms(true);
                 $scope.$digest();
             }
@@ -298,7 +298,7 @@ function AlarmsTableWidgetController($element, $scope, $filter, $mdMedia, $mdDia
                 entityId = vm.currentAlarm.originator;
                 entityName = vm.currentAlarm.originatorName;
             }
-            vm.ctx.actionsApi.handleWidgetAction($event, descriptors[0], entityId, entityName, { alarm: alarm });
+            vm.ctx.actionsApi.handleWidgetAction($event, descriptors[0], entityId, entityName);
         }
     }
 
@@ -312,7 +312,7 @@ function AlarmsTableWidgetController($element, $scope, $filter, $mdMedia, $mdDia
             entityId = alarm.originator;
             entityName = alarm.originatorName;
         }
-        vm.ctx.actionsApi.handleWidgetAction($event, actionDescriptor, entityId, entityName, { alarm: alarm });
+        vm.ctx.actionsApi.handleWidgetAction($event, actionDescriptor, entityId, entityName);
     }
 
     function isCurrent(alarm) {

@@ -16,7 +16,6 @@
 package org.thingsboard.server.transport.mqtt.session;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.netty.buffer.ByteBuf;
@@ -25,7 +24,6 @@ import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.handler.codec.mqtt.*;
 import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.id.SessionId;
-import org.thingsboard.server.common.data.kv.AttributeKvEntry;
 import org.thingsboard.server.common.data.kv.KvEntry;
 import org.thingsboard.server.common.msg.core.*;
 import org.thingsboard.server.common.msg.kv.AttributesKVMsg;
@@ -37,7 +35,6 @@ import org.thingsboard.server.transport.mqtt.MqttTopics;
 import org.thingsboard.server.transport.mqtt.MqttTransportHandler;
 
 import java.nio.charset.Charset;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -86,7 +83,7 @@ public class GatewayDeviceSessionCtx extends DeviceAwareSessionContext {
                 if (responseMsg.isSuccess()) {
                     MsgType requestMsgType = responseMsg.getRequestMsgType();
                     Integer requestId = responseMsg.getRequestId();
-                    if (requestId >= 0 && requestMsgType == MsgType.POST_ATTRIBUTES_REQUEST || requestMsgType == MsgType.POST_TELEMETRY_REQUEST) {
+                    if (requestMsgType == MsgType.POST_ATTRIBUTES_REQUEST || requestMsgType == MsgType.POST_TELEMETRY_REQUEST) {
                         return Optional.of(MqttTransportHandler.createMqttPubAckMsg(requestId));
                     }
                 }
@@ -138,43 +135,40 @@ public class GatewayDeviceSessionCtx extends DeviceAwareSessionContext {
         if (responseData.isPresent()) {
             AttributesKVMsg msg = responseData.get();
             if (msg.getClientAttributes() != null) {
-                addValues(result, msg.getClientAttributes());
+                msg.getClientAttributes().forEach(v -> addValueToJson(result, "value", v));
             }
             if (msg.getSharedAttributes() != null) {
-                addValues(result, msg.getSharedAttributes());
+                msg.getSharedAttributes().forEach(v -> addValueToJson(result, "value", v));
             }
         }
         return createMqttPublishMsg(topic, result);
     }
 
-    private void addValues(JsonObject result, List<AttributeKvEntry> kvList) {
-        if (kvList.size() == 1) {
-            addValueToJson(result, "value", kvList.get(0));
-        } else {
-            JsonObject values;
-            if (result.has("values")) {
-                values = result.get("values").getAsJsonObject();
-            } else {
-                values = new JsonObject();
-                result.add("values", values);
-            }
-            kvList.forEach(value -> addValueToJson(values, value.getKey(), value));
-        }
-    }
-
     private void addValueToJson(JsonObject json, String name, KvEntry entry) {
         switch (entry.getDataType()) {
             case BOOLEAN:
-                entry.getBooleanValue().ifPresent(aBoolean -> json.addProperty(name, aBoolean));
+                Optional<Boolean> booleanValue = entry.getBooleanValue();
+                if (booleanValue.isPresent()) {
+                    json.addProperty(name, booleanValue.get());
+                }
                 break;
             case STRING:
-                entry.getStrValue().ifPresent(aString -> json.addProperty(name, aString));
+                Optional<String> stringValue = entry.getStrValue();
+                if (stringValue.isPresent()) {
+                    json.addProperty(name, stringValue.get());
+                }
                 break;
             case DOUBLE:
-                entry.getDoubleValue().ifPresent(aDouble -> json.addProperty(name, aDouble));
+                Optional<Double> doubleValue = entry.getDoubleValue();
+                if (doubleValue.isPresent()) {
+                    json.addProperty(name, doubleValue.get());
+                }
                 break;
             case LONG:
-                entry.getLongValue().ifPresent(aLong -> json.addProperty(name, aLong));
+                Optional<Long> longValue = entry.getLongValue();
+                if (longValue.isPresent()) {
+                    json.addProperty(name, longValue.get());
+                }
                 break;
         }
     }

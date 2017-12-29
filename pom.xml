@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.thingsboard</groupId>
     <artifactId>thingsboard</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.3.1</version>
     <packaging>pom</packaging>
 
     <name>Thingsboard</name>
@@ -33,7 +33,8 @@
         <spring.version>4.3.4.RELEASE</spring.version>
         <spring-security.version>4.2.0.RELEASE</spring-security.version>
         <jjwt.version>0.7.0</jjwt.version>
-         <json-path.version>2.2.0</json-path.version>
+        <joda-time.version>2.4</joda-time.version>
+        <json-path.version>2.2.0</json-path.version>
         <junit.version>4.12</junit.version>
         <slf4j.version>1.7.7</slf4j.version>
         <logback.version>1.2.3</logback.version>
@@ -77,6 +78,7 @@
         <spring-test-dbunit.version>1.2.1</spring-test-dbunit.version>
         <postgresql.driver.version>9.4.1211</postgresql.driver.version>
         <sonar.exclusions>org/thingsboard/server/gen/**/*, org/thingsboard/server/extensions/core/plugin/telemetry/gen/**/*</sonar.exclusions>
+	<skipTests>true</skipTests>
     </properties>
 
     <modules>
@@ -350,18 +352,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.thingsboard.extensions</groupId>
-                <artifactId>extension-sqs</artifactId>
-                <classifier>extension</classifier>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.thingsboard.extensions</groupId>
-                <artifactId>extension-sns</artifactId>
-                <classifier>extension</classifier>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.thingsboard.common</groupId>
                 <artifactId>data</artifactId>
                 <version>${project.version}</version>
@@ -481,6 +471,11 @@
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt</artifactId>
                 <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>${joda-time.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.velocity</groupId>

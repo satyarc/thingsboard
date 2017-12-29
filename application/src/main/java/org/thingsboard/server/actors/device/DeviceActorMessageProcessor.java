@@ -164,7 +164,7 @@ public class DeviceActorMessageProcessor extends AbstractContextAwareMsgProcesso
         } else {
             logger.debug("[{}] No pending RPC messages for new async session [{}]", deviceId, sessionId);
         }
-        Set<Integer> sentOneWayIds = new HashSet<>();
+        Set<UUID> sentOneWayIds = new HashSet<>();
         if (type == SessionType.ASYNC) {
             rpcPendingMap.entrySet().forEach(processPendingRpc(context, sessionId, server, sentOneWayIds));
         } else {
@@ -174,12 +174,12 @@ public class DeviceActorMessageProcessor extends AbstractContextAwareMsgProcesso
         sentOneWayIds.forEach(rpcPendingMap::remove);
     }
 
-    private Consumer<Map.Entry<Integer, ToDeviceRpcRequestMetadata>> processPendingRpc(ActorContext context, SessionId sessionId, Optional<ServerAddress> server, Set<Integer> sentOneWayIds) {
+    private Consumer<Map.Entry<Integer, ToDeviceRpcRequestMetadata>> processPendingRpc(ActorContext context, SessionId sessionId, Optional<ServerAddress> server, Set<UUID> sentOneWayIds) {
         return entry -> {
             ToDeviceRpcRequest request = entry.getValue().getMsg().getMsg();
             ToDeviceRpcRequestBody body = request.getBody();
             if (request.isOneway()) {
-                sentOneWayIds.add(entry.getKey());
+                sentOneWayIds.add(request.getId());
                 ToPluginRpcResponseDeviceMsg responsePluginMsg = toPluginRpcResponseMsg(entry.getValue().getMsg(), (String) null);
                 context.parent().tell(responsePluginMsg, ActorRef.noSender());
             }

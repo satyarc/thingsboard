@@ -63,7 +63,7 @@ function DashboardService($rootScope, $http, $q, $location, customerService) {
         return deferred.promise;
     }
 
-    function getTenantDashboards(pageLink, applyCustomersInfo) {
+    function getTenantDashboards(pageLink) {
         var deferred = $q.defer();
         var url = '/api/tenant/dashboards?limit=' + pageLink.limit;
         if (angular.isDefined(pageLink.textSearch)) {
@@ -76,26 +76,22 @@ function DashboardService($rootScope, $http, $q, $location, customerService) {
             url += '&textOffset=' + pageLink.textOffset;
         }
         $http.get(url, null).then(function success(response) {
-            if (applyCustomersInfo) {
-                customerService.applyAssignedCustomersInfo(response.data.data).then(
-                    function success(data) {
-                        response.data.data = data;
-                        deferred.resolve(response.data);
-                    },
-                    function fail() {
-                        deferred.reject();
-                    }
-                );
-            } else {
-                deferred.resolve(response.data);
-            }
+            customerService.applyAssignedCustomersInfo(response.data.data).then(
+                function success(data) {
+                    response.data.data = data;
+                    deferred.resolve(response.data);
+                },
+                function fail() {
+                    deferred.reject();
+                }
+            );
         }, function fail() {
             deferred.reject();
         });
         return deferred.promise;
     }
 
-    function getCustomerDashboards(customerId, pageLink, applyCustomersInfo) {
+    function getCustomerDashboards(customerId, pageLink) {
         var deferred = $q.defer();
         var url = '/api/customer/' + customerId + '/dashboards?limit=' + pageLink.limit;
         if (angular.isDefined(pageLink.textSearch)) {
@@ -108,19 +104,15 @@ function DashboardService($rootScope, $http, $q, $location, customerService) {
             url += '&textOffset=' + pageLink.textOffset;
         }
         $http.get(url, null).then(function success(response) {
-            if (applyCustomersInfo) {
-                customerService.applyAssignedCustomerInfo(response.data.data, customerId).then(
-                    function success(data) {
-                        response.data.data = data;
-                        deferred.resolve(response.data);
-                    },
-                    function fail() {
-                        deferred.reject();
-                    }
-                );
-            } else {
-                deferred.resolve(response.data);
-            }
+            customerService.applyAssignedCustomerInfo(response.data.data, customerId).then(
+                function success(data) {
+                    response.data.data = data;
+                    deferred.resolve(response.data);
+                },
+                function fail() {
+                    deferred.reject();
+                }
+            );
         }, function fail() {
             deferred.reject();
         });

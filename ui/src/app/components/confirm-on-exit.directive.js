@@ -18,17 +18,17 @@ export default angular.module('thingsboard.directives.confirmOnExit', [])
     .name;
 
 /*@ngInject*/
-function ConfirmOnExit($state, $mdDialog, $window, $filter, userService) {
+function ConfirmOnExit($state, $mdDialog, $window, $filter) {
     return {
         link: function ($scope) {
 
             $window.onbeforeunload = function () {
-                if (userService.isAuthenticated() && (($scope.confirmForm && $scope.confirmForm.$dirty) || $scope.isDirty)) {
+                if (($scope.confirmForm && $scope.confirmForm.$dirty) || $scope.isDirty) {
                     return $filter('translate')('confirm-on-exit.message');
                 }
             }
             $scope.$on('$stateChangeStart', function (event, next, current, params) {
-                if (userService.isAuthenticated() && (($scope.confirmForm && $scope.confirmForm.$dirty) || $scope.isDirty)) {
+                if (($scope.confirmForm && $scope.confirmForm.$dirty) || $scope.isDirty) {
                     event.preventDefault();
                     var confirm = $mdDialog.confirm()
                         .title($filter('translate')('confirm-on-exit.title'))

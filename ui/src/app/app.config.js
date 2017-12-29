@@ -47,6 +47,8 @@ export default function AppConfig($provide,
     storeProvider.setCaching(false);
 
     $translateProvider.useSanitizeValueStrategy(null);
+    $translateProvider.preferredLanguage('en_US');
+    $translateProvider.useLocalStorage();
     $translateProvider.useMissingTranslationHandler('tbMissingTranslationHandler');
     $translateProvider.addInterpolation('$translateMessageFormatInterpolation');
 
@@ -55,12 +57,8 @@ export default function AppConfig($provide,
     addLocaleRussian(locales);
     addLocaleSpanish(locales);
 
-    for (var langKey in locales) {
-        var translationTable = locales[langKey];
-        $translateProvider.translations(langKey, translationTable);
-    }
-
-    var lang = $translateProvider.resolveClientLocale();
+    var $window = angular.injector(['ng']).get('$window');
+    var lang = $window.navigator.language || $window.navigator.userLanguage;
     if (lang) {
         lang = lang.toLowerCase();
         if (lang.startsWith('ko')) {
@@ -71,11 +69,12 @@ export default function AppConfig($provide,
             $translateProvider.preferredLanguage('es_ES');
         } else if (lang.startsWith('ru')) {
             $translateProvider.preferredLanguage('ru_RU');
-        } else {
-            $translateProvider.preferredLanguage('en_US');
         }
-    } else {
-        $translateProvider.preferredLanguage('en_US');
+    }
+
+    for (var langKey in locales) {
+        var translationTable = locales[langKey];
+        $translateProvider.translations(langKey, translationTable);
     }
 
     $httpProvider.interceptors.push('globalInterceptor');
