@@ -52,7 +52,7 @@ public abstract class BaseUserServiceTest extends AbstractServiceTest {
         User tenantAdmin = new User();
         tenantAdmin.setAuthority(Authority.TENANT_ADMIN);
         tenantAdmin.setTenantId(tenantId);
-        tenantAdmin.setEmail("tenant@thingsboard.org");
+        tenantAdmin.setEmail("admin@intellipredikt.org");
         userService.saveUser(tenantAdmin);
 
         Customer customer = new Customer();
@@ -78,7 +78,7 @@ public abstract class BaseUserServiceTest extends AbstractServiceTest {
         User user = userService.findUserByEmail("sysadmin@thingsboard.org");
         Assert.assertNotNull(user);
         Assert.assertEquals(Authority.SYS_ADMIN, user.getAuthority());
-        user = userService.findUserByEmail("tenant@thingsboard.org");
+        user = userService.findUserByEmail("admin@intellipredikt.org");
         Assert.assertNotNull(user);
         Assert.assertEquals(Authority.TENANT_ADMIN, user.getAuthority());
         user = userService.findUserByEmail("customer@thingsboard.org");
@@ -107,7 +107,7 @@ public abstract class BaseUserServiceTest extends AbstractServiceTest {
 
     @Test
     public void testSaveUser() {
-        User tenantAdminUser = userService.findUserByEmail("tenant@thingsboard.org");
+        User tenantAdminUser = userService.findUserByEmail("admin@intellipredikt.org");
         User user = new User();
         user.setAuthority(Authority.TENANT_ADMIN);
         user.setTenantId(tenantAdminUser.getTenantId());
@@ -138,35 +138,35 @@ public abstract class BaseUserServiceTest extends AbstractServiceTest {
 
     @Test(expected = DataValidationException.class)
     public void testSaveUserWithSameEmail() {
-        User tenantAdminUser = userService.findUserByEmail("tenant@thingsboard.org");
+        User tenantAdminUser = userService.findUserByEmail("admin@intellipredikt.org");
         tenantAdminUser.setEmail("sysadmin@thingsboard.org");
         userService.saveUser(tenantAdminUser);
     }
 
     @Test(expected = DataValidationException.class)
     public void testSaveUserWithInvalidEmail() {
-        User tenantAdminUser = userService.findUserByEmail("tenant@thingsboard.org");
+        User tenantAdminUser = userService.findUserByEmail("admin@intellipredikt.org");
         tenantAdminUser.setEmail("tenant_thingsboard.org");
         userService.saveUser(tenantAdminUser);
     }
 
     @Test(expected = DataValidationException.class)
     public void testSaveUserWithEmptyEmail() {
-        User tenantAdminUser = userService.findUserByEmail("tenant@thingsboard.org");
+        User tenantAdminUser = userService.findUserByEmail("admin@intellipredikt.org");
         tenantAdminUser.setEmail(null);
         userService.saveUser(tenantAdminUser);
     }
 
     @Test(expected = DataValidationException.class)
     public void testSaveUserWithoutTenant() {
-        User tenantAdminUser = userService.findUserByEmail("tenant@thingsboard.org");
+        User tenantAdminUser = userService.findUserByEmail("admin@intellipredikt.org");
         tenantAdminUser.setTenantId(null);
         userService.saveUser(tenantAdminUser);
     }
 
     @Test
     public void testDeleteUser() {
-        User tenantAdminUser = userService.findUserByEmail("tenant@thingsboard.org");
+        User tenantAdminUser = userService.findUserByEmail("admin@intellipredikt.org");
         User user = new User();
         user.setAuthority(Authority.TENANT_ADMIN);
         user.setTenantId(tenantAdminUser.getTenantId());
@@ -187,7 +187,7 @@ public abstract class BaseUserServiceTest extends AbstractServiceTest {
 
     @Test
     public void testFindTenantAdmins() {
-        User tenantAdminUser = userService.findUserByEmail("tenant@thingsboard.org");
+        User tenantAdminUser = userService.findUserByEmail("admin@intellipredikt.org");
         TextPageData<User> pageData = userService.findTenantAdmins(tenantAdminUser.getTenantId(), new TextPageLink(10));
         Assert.assertFalse(pageData.hasNext());
         List<User> users = pageData.getData();
