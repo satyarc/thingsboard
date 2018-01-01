@@ -88,7 +88,7 @@
         <module>extensions-core</module>
         <module>extensions</module>
         <module>transport</module>
-        <module>ui</module>
+        
         <module>tools</module>
         <module>application</module>
     </modules>
