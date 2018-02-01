@@ -18,7 +18,7 @@ import $ from 'jquery';
 
 /* eslint-disable import/no-unresolved, import/default */
 
-import logoSvg from '../../svg/logo_title_white.svg';
+//import logoSvg from '../../svg/logo_title_white.jpg';
 
 /* eslint-enable import/no-unresolved, import/default */
 
@@ -26,14 +26,121 @@ import logoSvg from '../../svg/logo_title_white.svg';
 
 /*@ngInject*/
 export default function HomeController(types, loginService, userService, deviceService, Fullscreen, $scope, $element, $rootScope, $document, $state,
-                                       $window, $log, $mdMedia, $animate, $timeout) {
+                                       $window, $log, $mdMedia, $animate, $timeout,$stateParams,$translate, customerService,assetService,dashboardService) {
 
+	var user = userService.getCurrentUser();
+	var authority = user.authority;
+		
     var siteSideNav = $('.tb-site-sidenav', $element);
 
     var vm = this;
+    
+    vm.isCustomerUser = function(){
+		return (authority === 'CUSTOMER_USER');
+	}
+    
+    vm.isAdministrator = function(){
+		return (authority === 'SYS_ADMIN' || authority === 'TENANT_ADMIN');
+	}
+    
+	if(authority === 'CUSTOMER_USER'){
+		
+		vm.topIndex = 0;
+		
+		vm.dashboardGridConfig = {
+			getItemTitleFunc: getDashboardTitle,
+			parentCtl: vm,
+			onGridInited: gridInited,
+			noItemsText: function() { return $translate.instant('dashboard.no-dashboard-text') }
+		};
+		
+		vm.deviceGridConfig = {
+			getItemTitleFunc: getDeviceTitle,
+			parentCtl: vm,
+			onGridInited: gridInited,
+			noItemsText: function() { return $translate.instant('device.no-devices-text') }
+		};
+				
+		vm.assetGridConfig = {
+			getItemTitleFunc: getAssetTitle,
+			parentCtl: vm,
+			onGridInited: gridInited,
+			noItemsText: function() { return $translate.instant('asset.no-assets-text') }
+		};
+			
+		vm.devicesScope = 'customer_user';
+		vm.assetsScope = 'customer_user';
+		vm.dashboardsScope = 'customer_user';
+		
+		var customerId = user.customerId;
+		
+		if (customerId) {
+			vm.customerDevicesTitle = $translate.instant('customer.devices'); 
+			vm.customerAssetsTitle = $translate.instant('customer.assets');
+			vm.customerDashboardsTitle = $translate.instant('customer.dashboards');
+			customerService.getShortCustomerInfo(customerId).then(
+				function success(info) {
+					if (info.isPublic) {
+						vm.customerDevicesTitle = $translate.instant('customer.public-devices');
+						vm.customerAssetsTitle = $translate.instant('customer.public-assets');
+						vm.customerDashboardsTitle = $translate.instant('customer.public-dashboards');
+						}
+					}
+			);
+		}
+		
+		var fetchDevicesFunction = function (pageLink,deviceType) {
+			return deviceService.getCustomerDevices(customerId, pageLink,true, null, deviceType);
+		};
+		
+		var fetchAssetsFunction = function (pageLink,assetType) {
+			return assetService.getCustomerAssets(customerId, pageLink,true, null, assetType);
+		};
+		
+		var fetchDashboardsFunction = function (pageLink) {
+            return dashboardService.getCustomerDashboards(customerId, pageLink);
+        };
+		
+		var refreshAssetsParamsFunction = function () {
+			return {"customerId": customerId, "topIndex": vm.topIndex};
+		};
+		
+		var refreshDevicesParamsFunction = function () {
+			return {"customerId": customerId, "topIndex": vm.topIndex};
+		};
+		
+		var refreshDashboardsParamsFunction = function () {
+			return {"customerId": customerId, "topIndex": vm.topIndex};
+		};
 
+		vm.assetGridConfig.refreshParamsFunc = refreshAssetsParamsFunction;
+		vm.assetGridConfig.fetchItemsFunc = fetchAssetsFunction;
+		
+		vm.deviceGridConfig.refreshParamsFunc = refreshDevicesParamsFunction;
+		vm.deviceGridConfig.fetchItemsFunc = fetchDevicesFunction;
+		
+		vm.dashboardGridConfig.refreshParamsFunc = refreshDashboardsParamsFunction;
+		vm.dashboardGridConfig.fetchItemsFunc = fetchDashboardsFunction;
+
+		var getDeviceTitle = function (device) {
+			return device ? device.name : '';
+		}
+		
+		var getAssetTitle = function(asset) {
+			return asset ? asset.name : '';
+		}
+		
+		var getDashboardTitle = function(dashboard) {
+			return dashboard ? dashboard.name : '';
+		}
+		
+		var gridInited = function (grid) {
+			vm.grid = grid;
+		}
+	}
+	
     vm.Fullscreen = Fullscreen;
-    vm.logoSvg = logoSvg;
+    //vm.logoSvg = logoSvg;
 
     if (angular.isUndefined($rootScope.searchConfig)) {
         $rootScope.searchConfig = {

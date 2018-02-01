@@ -21,11 +21,15 @@ import thingsboardDetailsSidenav from './details-sidenav.directive';
 /* eslint-disable import/no-unresolved, import/default */
 
 import gridTemplate from './grid.tpl.html';
+import usergridTemplate from './usergrid.tpl.html';
+import usermenugridTemplate from './usermenugrid.tpl.html';
 
 /* eslint-enable import/no-unresolved, import/default */
 
 export default angular.module('thingsboard.directives.grid', [thingsboardScopeElement, thingsboardDetailsSidenav])
     .directive('tbGrid', Grid)
+    .directive('tbUserGrid', UserGrid)
+    .directive('tbUserMenuGrid', UserMenuGrid)
     .controller('AddItemController', AddItemController)
     .controller('ItemCardController', ItemCardController)
     .directive('tbGridCardContent', GridCardContent)
@@ -36,11 +40,9 @@ export default angular.module('thingsboard.directives.grid', [thingsboardScopeEl
 function RangeFilter() {
     return function(input, total) {
         total = parseInt(total);
-
         for (var i=0; i<total; i++) {
             input.push(i);
         }
-
         return input;
     };
 }
@@ -121,6 +123,34 @@ function Grid() {
         controller: GridController,
         controllerAs: 'vm',
         templateUrl: gridTemplate
+    }
+}
+
+/*@ngInject*/
+function UserGrid() {
+    return {
+        restrict: "E",
+        scope: true,
+        bindToController: {
+            gridConfiguration: '&?'
+        },
+        controller: GridController,
+        controllerAs: 'vm',
+        templateUrl: usergridTemplate
+    }
+}
+
+/*@ngInject*/
+function UserMenuGrid() {
+    return {
+        restrict: "E",
+        scope: true,
+        bindToController: {
+            gridConfiguration: '&?'
+        },
+        controller: GridController,
+        controllerAs: 'vm',
+        templateUrl: usermenugridTemplate
     }
 }
 
@@ -685,6 +715,10 @@ function GridController($scope, $state, $mdDialog, $document, $q, $mdUtil, $time
     function hasData() {
         return vm.items.data.length > 0;
     }
+    
+	vm.openDashboard = function(dashboard) {  
+		$state.go('home.dashboards.dashboard', {dashboardId: dashboard.id.id});
+	}
 
 }
 

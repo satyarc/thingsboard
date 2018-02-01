@@ -17,10 +17,14 @@ import uiRouter from 'angular-ui-router';
 
 import HomeLinksRoutes from './home-links.routes';
 import HomeLinksController from './home-links.controller';
+import UserHomeLinksController from './userhome-links.controller';
+
+import thingsboardApiUser from '../api/user.service';
 
 export default angular.module('thingsboard.homeLinks', [
-    uiRouter
+    uiRouter,thingsboardApiUser
 ])
     .config(HomeLinksRoutes)
     .controller('HomeLinksController', HomeLinksController)
+    .controller('UserHomeLinksController', UserHomeLinksController)
     .name;

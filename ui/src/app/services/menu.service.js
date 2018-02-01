@@ -21,17 +21,17 @@ export default angular.module('thingsboard.menu', [thingsboardApiUser])
 
 /*@ngInject*/
 function Menu(userService, $state, $rootScope) {
-
-    var authority = '';
     var sections = [];
     var homeSections = [];
+    
+    var authority = userService.getCurrentUser().authority;
 
-    if (userService.isUserLoaded() === true) {
-        buildMenu();
+	if (userService.isUserLoaded() === true) {
+			buildMenu();
     }
 
     var authenticatedHandle = $rootScope.$on('authenticated', function () {
-        buildMenu();
+			buildMenu();
     });
 
     var service = {
@@ -51,7 +51,8 @@ function Menu(userService, $state, $rootScope) {
     function getHomeSections() {
         return homeSections;
     }
-
+    
+    
     function buildMenu() {
         var user = userService.getCurrentUser();
         if (user) {
@@ -276,25 +277,24 @@ function Menu(userService, $state, $rootScope) {
                             }];
 
                 } else if (authority === 'CUSTOMER_USER') {
-                    sections = [
-                        {
-                            name: 'dashboard.dashboards',
+					sections = [
+						{
+                            name: 'home.home',
                             type: 'link',
-                            state: 'home.dashboards',
-                            icon: 'dashboard'
+                            state: 'home.userlinks',
+                            icon: 'home'
                         }];
 
                     homeSections =
-                        [{
-                                name: 'dashboard.view-dashboards',
-                                places: [
-                                    {
-                                        name: 'dashboard.dashboards',
-                                        icon: 'dashboard',
-                                        state: 'home.dashboards'
-                                    }
-                                ]
-                            }];
+                      [{
+                        name: 'dashboard.view-dashboards',
+                        places: [
+                        {
+                        name: 'dashboard.dashboards',
+                        icon: 'dashboard',
+                        state: 'home.dashboards'
+                        }]
+                      }];
                 }
             }
         }

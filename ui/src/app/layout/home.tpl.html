@@ -25,15 +25,33 @@
 			  md-is-locked-open="vm.isLockSidenav"
 			  layout="column">
       <header class="tb-nav-header">
+      		
           <md-toolbar class="tb-nav-header-toolbar">
           	 <div flex layout="row" layout-align="start start" class="md-toolbar-tools inset">
-				<md-icon md-svg-src="{{vm.logoSvg}}" aria-label="logo" class="tb-logo-title"></md-icon>
+				<!--  <md-icon md-svg-src="{{vm.logoSvg}}" aria-label="logo" class="tb-logo-title"></md-icon> -->
           	 </div>
-          </md-toolbar>
+          </md-toolbar> 
+          	
       </header>
-	  <md-toolbar flex class="tb-side-menu-toolbar" role="navigation">
-		  <tb-side-menu></tb-side-menu>
+	  <md-toolbar ng-show="vm.isAdministrator()" flex class="tb-side-menu-toolbar" role="navigation">
+		  <tb-side-menu></tb-side-menu> 
 	  </md-toolbar>
+	  
+	  <!--  
+	  <md-toolbar ng-show="vm.isCustomerUser()" flex class="tb-side-menu-toolbar" role="navigation"> 
+		  <tb-user-menu-grid grid-configuration="vm.assetGridConfig"></tb-user-menu-grid>  
+	  </md-toolbar>
+	   
+	  
+	  <md-toolbar ng-show="vm.isCustomerUser()" flex class="tb-side-menu-toolbar" role="navigation"> 
+		  <tb-user-menu-grid grid-configuration="vm.deviceGridConfig"></tb-user-menu-grid> 
+	  </md-toolbar>
+	  -->
+	  
+	  <md-toolbar ng-show="vm.isCustomerUser()" flex class="tb-side-menu-toolbar" role="navigation"> 
+		  <tb-user-menu-grid grid-configuration="vm.dashboardGridConfig"></tb-user-menu-grid> 
+	  </md-toolbar>
+	  
   </md-sidenav>
 
   <div flex layout="column" tabIndex="-1" role="main">
@@ -71,9 +89,11 @@
 		      <md-button ng-show="!vm.displaySearchMode()" hide-xs hide-sm class="md-icon-button" ng-click="vm.toggleFullscreen()" aria-label="{{ 'fullscreen.toggle' | translate }}">
 	    			<ng-md-icon icon="{{vm.Fullscreen.isEnabled() ? 'fullscreen_exit' : 'fullscreen'}}" options='{"easing": "circ-in-out", "duration": 375, "rotation": "none"}'></ng-md-icon>
 		      </md-button>
+		       
 			  <tb-user-menu
 					  display-user-info="!vm.displaySearchMode()">
 			  </tb-user-menu>
+			  
       	</div>
     </md-toolbar>
    	<md-progress-linear class="md-warn" style="z-index: 10; max-height: 0px; width: 100%;" md-mode="indeterminate" ng-disabled="!loading" ng-show="loading"></md-progress-linear>
